@@ -1,0 +1,64 @@
+﻿@model IPagedList<ITBloggerMoses.Models.BlogPost>
+@using PagedList;
+@using PagedList.Mvc;
+
+@{ 
+    ViewBag.Title = "Home Page";
+}
+
+ <!-- Page Header -->
+<!-- Set your background image for this header on the line below. -->
+<header class="intro-header" style="background-image: url('../images/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="site-heading">
+                    <h1>IT Blogger - Moses</h1>
+                    <hr class="small">
+                    <span class="subheading">A Clean Blog Theme by Start Bootstrap modified by Moses DeSaussure</span>
+                    @using (Html.BeginForm("Index", "Home", FormMethod.Get, htmlAttributes: new { @class = "form" }))
+                    {
+                        <div class="controls controls-row search-row">
+                            <input id="searchStr" name="searchStr" class="input-block-level" type="text" placeholder="Search">
+                            <button id="searchStr" name="searchStr" class="btn btn-success" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    }
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            @foreach (var blogpost in Model.OrderByDescending(m => m.Created))
+            {
+                <div class="post-preview">
+                    <a href="@Url.Action("Details", "BlogPosts", new {id = blogpost.Id})">
+                        <h2 class="post-title">
+                            @blogpost.Title
+                        </h2>
+                        <h3 class="post-subtitle">
+                            @blogpost.Abstract
+                        </h3>
+                    </a>
+                    <p class="post-meta">Posted by <a href="#">Moses DeSaussure</a> on @blogpost.Created</p>
+                </div>
+                <hr>
+            }  
+
+            <!-- Pager -->
+          
+        </div>
+    </div>
+</div>
+
+ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchStr = ViewBag.Search }));
+

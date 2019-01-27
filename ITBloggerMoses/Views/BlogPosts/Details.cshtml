@@ -1,0 +1,89 @@
+﻿@model ITBloggerMoses.Models.BlogPost
+@using ITBloggerMoses.Helpers;
+
+@{
+    ViewBag.Title = "Details";
+}
+
+@*<h2>Details</h2>*@
+
+<!-- Page Header -->
+<!-- Set your background image for this header on the line below. -->
+<header class="intro-header" style="background-image: url('../../images/bigstock-195431965-1024x1024.jpg');">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>@Model.Title</h1>
+                    <h2 class="subheading">@Model.Abstract</h2>
+                    <span class="meta">Posted by <a href="#">Moses DeSaussure</a> @Model.Created</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                @Html.Raw(Model.Body) 
+
+                @if (Model.MediaUrl != null)
+                {
+                    <a href="#">
+                        <img class="img-responsive" src="@Url.Content(Model.MediaUrl)" alt="">
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</article>
+<hr>
+@*List out existing comments*@
+@{
+    var cntr = 1;
+}
+
+@foreach (var comment in Model.Comments.OrderByDescending(m => m.Created))
+{
+   <div class="dropdown">
+   <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Comments
+    <span class="caret"></span></button>
+       <ul class="dropdown-menu">
+           <li data-toggle="collapse" data-parent="#accordion" href="#collapse@(cntr)">Comment</li>
+       </ul>
+                
+            </div>
+            <div id="collapse@(cntr)" class="panel-collapse collapse ">
+                <div class="panel-body">@comment.Body</div>
+                <div class="panel-footer">
+                    <p class="subheading">Written by: @Utilities.GetAuthorName(comment.AuthorId) on @comment.Created</p>                  
+                </div>
+            </div>
+        @*</div>
+    </div>*@
+    cntr++;
+    <br/>
+
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+
+
+@*Create a new comment*@
+using (Html.BeginForm("Create", "Comments", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("BlogPostId", Model.Id)
+
+    <label>Add Comment</label>
+    <input type="text" name="Body"/>
+    <input type="submit" value="Save"/>
+    }
+}
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
